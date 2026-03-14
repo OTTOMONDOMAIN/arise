@@ -7,6 +7,105 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Minecraft&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Error message styling */
+        .webstats-error {
+            background: rgba(255, 77, 77, 0.1);
+            border: 2px solid #ff4d4d;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .webstats-error i {
+            font-size: 3rem;
+            color: #ff4d4d;
+            margin-bottom: 1rem;
+        }
+        
+        .webstats-error h3 {
+            color: #ff4d4d;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .webstats-error p {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 1.5rem;
+        }
+        
+        .webstats-error .retry-btn {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .webstats-error .retry-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 77, 77, 0.3);
+        }
+        
+        .loading-spinner {
+            text-align: center;
+            padding: 3rem;
+        }
+        
+        .loading-spinner i {
+            font-size: 3rem;
+            color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* WebStats table styling to match your design */
+        .webstats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .webstats-table th {
+            background: var(--gradient);
+            color: white;
+            padding: 1rem;
+            text-align: left;
+        }
+        
+        .webstats-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .webstats-table tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .webstats-table .top-row {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,215,0,0.05));
+        }
+        
+        .webstats-table img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+        
+        .heart-icon {
+            color: #ff4d4d;
+            margin-right: 0.3rem;
+        }
+    </style>
 </head>
 <body>
     <!-- Animated Background -->
@@ -250,24 +349,17 @@
         </div>
     </section>
 
-    <!-- Leaderboard Section -->
+    <!-- Leaderboard Section - LIVE with WebStats -->
     <section id="leaderboard" class="leaderboard-section">
         <h2 class="section-title">Heart <span>Leaderboard</span></h2>
         <div class="leaderboard-container">
-            <table class="leaderboard-table">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Player</th>
-                        <th>Hearts</th>
-                        <th>Kills</th>
-                        <th>Deaths</th>
-                    </tr>
-                </thead>
-                <tbody id="leaderboard-body">
-                    <!-- Dynamic data will load here -->
-                </tbody>
-            </table>
+            <!-- WebStats will load here -->
+            <div id="webstats-container">
+                <div class="loading-spinner">
+                    <i class="fas fa-circle-notch"></i>
+                    <p>Loading live leaderboard...</p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -339,146 +431,75 @@
         Powered by NOT STUDIO
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="script.js"></script>
     
-    <!-- Combined Scripts -->
-    <script>
-    // Copy IP Function
-    function copyIP() {
-        const ip = 'arisemc.cbu.net:7173';
-        navigator.clipboard.writeText(ip).then(() => {
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.innerHTML = '<i class="fas fa-check-circle"></i> Server IP copied to clipboard!';
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        });
-    }
-
-    // Server Status
-    async function getServerStatus() {
-        try {
-            const response = await fetch("https://api.mcsrvstat.us/2/arisemc.cbu.net:7173");
-            const data = await response.json();
-
-            const statusIndicator = document.getElementById("status-indicator");
-            const statusText = document.getElementById("status-text");
-            const playerCount = document.getElementById("player-count");
-
-            if (data.online) {
-                statusIndicator.className = "status-indicator online";
-                statusText.innerText = "Server Online";
-                playerCount.innerText = `${data.players.online}/${data.players.max} Players`;
-                
-                // Update active players stat
-                document.getElementById("active-players").innerText = data.players.online + "+";
-                
-                if (data.players.list) {
-                    console.log("Online Players:", data.players.list);
-                }
-            } else {
-                statusIndicator.className = "status-indicator offline";
-                statusText.innerText = "Server Offline";
-                playerCount.innerText = "0/0 Players";
-            }
-        } catch (error) {
-            console.error("Error fetching server status:", error);
-            document.getElementById("status-text").innerText = "Server Status Unknown";
-            document.getElementById("player-count").innerText = "?/? Players";
-        }
-    }
-
-    // Lives Counter (Fake data - replace with your API)
-    async function getLives() {
-        try {
-            // Fake data for demo
-            const data = { lives: 15234 };
-            document.getElementById("total-lives").innerText = data.lives + "+";
-        } catch(error) {
-            console.error("Lives fetch error:", error);
-        }
-    }
-
-    // Leaderboard (Fake data - replace with your API)
-    async function getLeaderboard() {
-        try {
-            // Fake data for demo
-            const data = {
-                players: [
-                    {name: "Notch", hearts: 42, kills: 156, deaths: 23},
-                    {name: "Dream", hearts: 38, kills: 142, deaths: 31},
-                    {name: "Technoblade", hearts: 35, kills: 128, deaths: 19},
-                    {name: "George", hearts: 31, kills: 98, deaths: 27},
-                    {name: "Sapnap", hearts: 29, kills: 87, deaths: 34}
-                ]
-            };
-            
-            let html = "";
-            data.players.forEach((p, i) => {
-                html += `
-                <tr ${i === 0 ? 'class="top-player"' : ''}>
-                    <td>${i === 0 ? '#1 👑' : '#' + (i+1)}</td>
-                    <td><img src="https://mc-heads.net/avatar/${p.name}" alt="${p.name}" onerror="this.src='https://mc-heads.net/avatar/MHF_Steve'"> ${p.name}</td>
-                    <td><i class="fas fa-heart" style="color: #ff4d4d;"></i> ${p.hearts}</td>
-                    <td>${p.kills}</td>
-                    <td>${p.deaths}</td>
-                </tr>
-                `;
-            });
-            
-            document.getElementById("leaderboard-body").innerHTML = html;
-        } catch(error) {
-            console.error("Leaderboard fetch error:", error);
-        }
-    }
-
-    // Call all functions on page load
-    getServerStatus();
-    getLives();
-    getLeaderboard();
-    
-    // Update every 30 seconds
-    setInterval(() => {
-        getServerStatus();
-        getLives();
-        getLeaderboard();
-    }, 30000);
-
-    // Add notification styles
-    const style = document.createElement('style');
-    style.textContent = `
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #ff4d4d, #6b46c1);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            z-index: 9999;
-            animation: slideIn 0.3s ease;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
+    <!-- WebStats with Error Handling -->
+    <script type="importmap">
+        {
+            "imports": {
+                "webstats": "https://cdn.jsdelivr.net/npm/webstats@latest/dist/WebStats-dist.js"
             }
         }
-    `;
-    document.head.appendChild(style);
     </script>
-</body>
-                            </html>
+    
+    <script type="module">
+        // Copy IP Function
+        window.copyIP = function() {
+            const ip = 'arisemc.cbu.net:7173';
+            navigator.clipboard.writeText(ip).then(() => {
+                const notification = document.createElement('div');
+                notification.className = 'notification';
+                notification.innerHTML = '<i class="fas fa-check-circle"></i> Server IP copied to clipboard!';
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            });
+        };
+
+        // Server Status
+        async function getServerStatus() {
+            try {
+                const response = await fetch("https://api.mcsrvstat.us/2/arisemc.cbu.net:7173");
+                const data = await response.json();
+
+                const statusIndicator = document.getElementById("status-indicator");
+                const statusText = document.getElementById("status-text");
+                const playerCount = document.getElementById("player-count");
+
+                if (data.online) {
+                    statusIndicator.className = "status-indicator online";
+                    statusText.innerText = "Server Online";
+                    playerCount.innerText = `${data.players.online}/${data.players.max} Players`;
+                    document.getElementById("active-players").innerText = data.players.online + "+";
+                } else {
+                    statusIndicator.className = "status-indicator offline";
+                    statusText.innerText = "Server Offline";
+                    playerCount.innerText = "0/0 Players";
+                }
+            } catch (error) {
+                console.error("Error fetching server status:", error);
+                document.getElementById("status-text").innerText = "Server Status Unknown";
+                document.getElementById("player-count").innerText = "?/? Players";
+            }
+        }
+
+        // Call server status
+        getServerStatus();
+        setInterval(getServerStatus, 30000);
+
+        // WebStats Live Leaderboard with Error Handling
+        async function initWebStats() {
+            const container = document.getElementById('webstats-container');
+            
+            try {
+                // Import WebStats dynamically
+                const { WebStats } = await import('webstats');
+                
+                // Configure WebStats
+                await WebStats.init({
+                    host: 'arisemc.cbu.net',  // Your server IP
+      
