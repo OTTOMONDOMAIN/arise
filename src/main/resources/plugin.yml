@@ -1,0 +1,18 @@
+name: TeleportPlugin
+version: '${project.version}'
+main: com.example.teleport.TeleportPlugin
+api-version: '1.20'
+description: Teleport plugin for Minecraft.
+commands:
+  tp:
+    description: Teleport to a player or teleport a player to another player.
+    usage: /tp <player> [target]
+    permission: teleportplugin.tp
+    permission-message: You do not have permission to use this command!
+permissions:
+  teleportplugin.tp:
+    description: Allows teleporting to players.
+    default: op
+  teleportplugin.tp.others:
+    description: Allows teleporting another player to someone else.
+    default: op
